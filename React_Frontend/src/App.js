@@ -90,7 +90,7 @@ class App extends Component {
           );
         }
         if (resData.errors) {
-          throw new Error('User login failed!');
+          throw new Error('User login failed. Check your email and password. Try again!');
         }
         console.log(resData);
         this.setState({
