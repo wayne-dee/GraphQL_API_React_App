@@ -57,7 +57,7 @@ class Feed extends Component {
     const graphqlQuery = {
       query: `
         {
-          posts {
+          posts(page: ${page}) {
             posts {
               _id
               title
@@ -208,6 +208,7 @@ class Feed extends Component {
             );
             updatedPosts[postIndex] = post;
           } else {
+            // remove the last item and add new one at the top
             updatedPosts.pop();
             updatedPosts.unshift(post);
           }
