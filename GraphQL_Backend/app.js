@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const { graphqlHTTP } = require('express-graphql');
+const fs = require('fs')
 
 const graphqlSchema = require('./graphql/schema');
 const graphqlResolver = require('./graphql/resolvers');
@@ -52,8 +53,24 @@ app.use((req, res, next) => {
   }
   next();
 });
-
 app.use(isAuth)
+
+// Image upload
+app.put('/post-image', (req, res, next) => {
+  if (!req.isAuth) {
+    throw new Error('Not authenticated');
+  }
+  if(!req.file) {
+    res.status(200).json({message: 'No file was provided'})
+  }
+  if (req.body.oldPath) {
+    clearImage(oldPath)
+  }
+  return res.status(201).json({
+    message: 'File strored',
+    filePath: req.body.filePath
+  })
+})
 
 // GraphQL middleware/routes
 app.use('/graphql', 
@@ -90,3 +107,10 @@ mongoose
     app.listen(8080);
   })
   .catch(err => console.log(err)); 
+
+  // Clear images
+  const clearImage = filePath => {
+    filePath = path.join(__dirname, '..', filePath);
+    fs.unlink(filePath, err => console.log(err));
+  };
+  
