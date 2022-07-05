@@ -169,9 +169,9 @@ class Feed extends Component {
             "Validation failed. Make sure the email address isn't used yet!"
           );
         }
-        // if (resData.errors) {
-        //   throw new Error('User login failed!');
-        // }
+        if (resData.errors) {
+          throw new Error('User login failed!');
+        }
         console.log(resData);
         const post = {
           _id: resData.data.createPost._id,
