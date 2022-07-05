@@ -12,7 +12,7 @@ import SinglePostPage from './pages/Feed/SinglePost/SinglePost';
 import LoginPage from './pages/Auth/Login';
 import SignupPage from './pages/Auth/Signup';
 import './App.css';
-//
+
 class App extends Component {
   state = {
     showBackdrop: false,
@@ -60,13 +60,17 @@ class App extends Component {
     event.preventDefault();
     const graphqlQuery = {
       query: `
-        {
-          login(email: "${authData.email}", password: "${authData.password}") {
+        query UserLogin($email: String!, $password: String!) {
+          login(email: $email, password: $password) {
             token
             userId
           }
         }
-      `
+      `,
+      variables: {
+        email: authData.email,
+        password: authData.password
+      }
     };
     this.setState({ authLoading: true });
     fetch('http://localhost:8080/graphql', {
@@ -114,24 +118,24 @@ class App extends Component {
       });
   };
 
-
   signupHandler = (event, authData) => {
     event.preventDefault();
     this.setState({ authLoading: true });
     const graphqlQuery = {
       query: `
-      mutation {
-        createUser(userInput: {
-          email:"${authData.signupForm.email.value}",
-          password: "${authData.signupForm.password.value}", 
-          name: "${authData.signupForm.name.value}"}) {
-          _id
-          name
-          status
-        } 
+        mutation CreateNewUser($email: String!, $name: String!, $password: String!) {
+          createUser(userInput: {email: $email, name: $name, password: $password}) {
+            _id
+            email
+          }
+        }
+      `,
+      variables: {
+        email: authData.signupForm.email.value,
+        name: authData.signupForm.name.value,
+        password: authData.signupForm.password.value
       }
-      `
-    }
+    };
     fetch('http://localhost:8080/graphql', {
       method: 'POST',
       headers: {
@@ -140,7 +144,6 @@ class App extends Component {
       body: JSON.stringify(graphqlQuery)
     })
       .then(res => {
-        
         return res.json();
       })
       .then(resData => {
@@ -150,7 +153,7 @@ class App extends Component {
           );
         }
         if (resData.errors) {
-          throw new Error('User creation failed');
+          throw new Error('User creation failed!');
         }
         console.log(resData);
         this.setState({ isAuth: false, authLoading: false });
