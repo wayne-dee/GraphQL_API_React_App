@@ -68,7 +68,7 @@ app.put('/post-image', (req, res, next) => {
   }
   return res.status(201).json({
     message: 'File strored',
-    filePath: req.body.filePath
+    filePath: req.file.path
   })
 })
 
